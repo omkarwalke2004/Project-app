@@ -1,0 +1,10 @@
+commands
+
+sudo yum update -y
+sudo yum install git -y
+sudo yum install httpd -y
+sudo systemctl start httpd
+sudo systemctl enable httpd
+git clone
+cd your repo name
+sudo cp -r * /var/www/html/

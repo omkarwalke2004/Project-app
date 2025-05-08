@@ -1,0 +1,73 @@
+public class BankingContactOpportunityMapper {
+
+    // Original method to create mapping
+    public static void createContactOpportunityMapping(Id contactId, Id opportunityId) {
+        if (contactId == null || opportunityId == null) {
+            System.debug('ContactId or OpportunityId is null');
+            return;
+        }
+
+        Contact_Opportunity_Mapping__c mapping = new Contact_Opportunity_Mapping__c(
+            Contact__c = contactId,
+            Opportunity__c = opportunityId,
+            Mapping_Date__c = System.today()
+        );
+
+        try {
+            insert mapping;
+            System.debug('Mapping created successfully');
+        } catch (Exception e) {
+            System.debug('Error creating mapping: ' + e.getMessage());
+        }
+    }
+
+    // 🆕 New method to return mappings grouped by Contact
+    public static Map<Id, List<Opportunity>> getContactOpportunityMap() {
+        // Step 1: Query all mappings
+        List<Contact_Opportunity_Mapping__c> mappings = [
+            SELECT Contact__c, Opportunity__c FROM Contact_Opportunity_Mapping__c
+        ];
+
+        // Step 2: Collect all unique Opportunity Ids
+        Set<Id> opportunityIds = new Set<Id>();
+        for (Contact_Opportunity_Mapping__c m : mappings) {
+            opportunityIds.add(m.Opportunity__c);
+        }
+
+        // Step 3: Query all Opportunities
+        Map<Id, Opportunity> oppMap = new Map<Id, Opportunity>(
+            [SELECT Id, Name, StageName, Amount FROM Opportunity WHERE Id IN :opportunityIds]
+        );
+
+        // Step 4: Build Map<ContactId, List<Opportunity>>
+        Map<Id, List<Opportunity>> contactToOppMap = new Map<Id, List<Opportunity>>();
+        for (Contact_Opportunity_Mapping__c m : mappings) {
+            if (!contactToOppMap.containsKey(m.Contact__c)) {
+                contactToOppMap.put(m.Contact__c, new List<Opportunity>());
+            }
+            if (oppMap.containsKey(m.Opportunity__c)) {
+                contactToOppMap.get(m.Contact__c).add(oppMap.get(m.Opportunity__c));
+            }
+        }
+
+        // Step 5: Debug the map
+        for (Id contactId : contactToOppMap.keySet()) {
+            System.debug('Contact Id: ' + contactId);
+            for (Opportunity opp : contactToOppMap.get(contactId)) {
+                System.debug('-- Opportunity: ' + opp.Name + ', Stage: ' + opp.StageName);
+            }
+        }
+
+        return contactToOppMap;
+    }
+}
+////input
+// These must be valid IDs from your org
+Id contactId = '003gK000001paSHQAY';     // Must start with 003
+Id opportunityId = '006gK000001jtUwQAI';  // Must start with 006
+
+BankingContactOpportunityMapper.createContactOpportunityMapping(contactId, opportunityId);
+/////
+Map<Id, List<Opportunity>> result = BankingContactOpportunityMapper.getContactOpportunityMap();
+System.debug('Final Mapping: ' + result);
+////////

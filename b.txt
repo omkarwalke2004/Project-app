@@ -1,0 +1,48 @@
+public class AccountStageProgressService {
+    /**
+     * Calculates the stage progress for the given Account,
+     * updates the Account record, and returns the progress percentage.
+     */
+    public static Decimal calculateStageProgress(Id accountId) {
+        // 1. Query related opportunities
+        List<Opportunity> opps = [
+            SELECT StageName
+            FROM Opportunity
+            WHERE AccountId = :accountId
+        ];
+        
+        // 2. Sum up stage weights
+        Integer sumWeights = 0;
+        for (Opportunity o : opps) {
+            if (o.StageName == 'Prospecting')      sumWeights += 25;
+            else if (o.StageName == 'Negotiation') sumWeights += 50;
+            else if (o.StageName == 'Qualification')  sumWeights += 100;
+        }
+        
+        // 3. Compute average progress (0–100)
+        Decimal progress = (opps.isEmpty())
+            ? 0
+            : Decimal.valueOf(sumWeights) / opps.size();
+        
+        // 4. Update the Account’s field
+        Account a = new Account(
+            Id = accountId,
+            Stage_Progress__c = progress
+        );
+        update a;
+        
+        // 5. Return the computed progress
+        return progress;
+    }
+}
+//////////////////////////input//////////
+// Replace with a real Account Id from your org
+Id acctId = '001gK000005JocYQAS';
+
+// Call the method and capture the returned value
+Decimal newProgress = AccountStageProgressService.calculateStageProgress(acctId);
+
+// Log it so you can see it in the debug logs
+System.debug('Calculated Stage Progress for Account ' 
+    + acctId + ' is ' + newProgress + '%');
+////////////////////////////////////////////////////

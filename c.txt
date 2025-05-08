@@ -1,0 +1,39 @@
+public class OpportunityReportGeneratorr {
+    /**
+     * Queries all Opportunities with Probability > 50%,
+     * orders by CloseDate, builds a formatted report string,
+     * and returns that string.
+     */
+    public static String generateOpportunityReport() {
+        // 1. Fetch matching opportunities
+        List<Opportunity> opps = [
+            SELECT Name, Probability, CloseDate
+            FROM Opportunity
+            WHERE Probability > 50
+            ORDER BY CloseDate
+        ];
+        
+        // 2. Build the report header
+        String report = 'Opportunity Report (Probability > 50%)\n';
+        report += 'Name\t\tProbability\tClose Date\n';
+        report += '----\t\t-----------\t----------\n';
+        
+        // 3. Append each record
+        for (Opportunity o : opps) {
+            report += o.Name
+                   + '\t' + o.Probability + '%'
+                   + '\t' + o.CloseDate.format()
+                   + '\n';
+        }
+        
+        // 4. Return the full report text
+        return report;
+    }
+}
+///////////////////////////Input/////////////////////////
+// Call the report method and capture its return value
+String myReport = OpportunityReportGeneratorr.generateOpportunityReport();
+
+// Debug it so you can inspect the formatted string in logs
+System.debug(myReport);
+//////////////////////////////

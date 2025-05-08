@@ -1,0 +1,74 @@
+public class SimpleCalculatorr {
+    // Existing Decimal versions
+    public static Decimal add(Decimal num1, Decimal num2)     { return num1 + num2; }
+    public static Decimal subtract(Decimal num1, Decimal num2){ return num1 - num2; }
+    public static Decimal multiply(Decimal num1, Decimal num2){ return num1 * num2; }
+    public static Decimal divide(Decimal num1, Decimal num2) {
+        if (num2 == 0) throw new IllegalArgumentException('Division by zero');
+        return num1 / num2;
+    }
+
+    // New Integer overloads
+    public static Integer add(Integer num1, Integer num2)       { return num1 + num2; }
+    public static Integer subtract(Integer num1, Integer num2)  { return num1 - num2; }
+    public static Integer multiply(Integer num1, Integer num2)  { return num1 * num2; }
+    public static Decimal divide(Integer num1, Integer num2) {
+        if (num2 == 0) throw new IllegalArgumentException('Division by zero');
+        // return Decimal result for division
+        return Decimal.valueOf(num1) / Decimal.valueOf(num2);
+    }
+}
+
+///////////////////Input////////////////////
+// Integer-based calls
+Integer iSum = SimpleCalculatorr.add(10, 5);
+System.debug('10 + 5 = ' + iSum);
+
+// Mixed: integer divide returns Decimal
+Decimal iQuotient = SimpleCalculatorr.divide(10, 3);
+System.debug('10 / 3 = ' + iQuotient);
+///////////////////////////////////////
+///////////////////////////////////////
+public static Integer mod(Integer num1, Integer num2) {
+    if (num2 == 0) throw new IllegalArgumentException("Division by zero");
+    return num1 % num2;
+}
+
+public static Decimal mod(Decimal num1, Decimal num2) {
+    if (num2.compareTo(Decimal.ZERO) == 0) throw new IllegalArgumentException("Division by zero");
+    return num1.remainder(num2);
+}
+
+////////////////////////input////////////////////
+Integer result = SimpleCalculatorr.mod(10, 3);  // result = 1
+////////////////////////////////////
+public static Decimal power(Decimal base, Decimal exponent) {
+    return Decimal.valueOf(Math.pow(base.doubleValue(), exponent.doubleValue()));
+}
+
+public static Integer power(Integer base, Integer exponent) {
+    return (int) Math.pow(base, exponent);
+}
+///////////////////////////input/////////////
+Integer result = SimpleCalculatorr.power(2, 3); // result = 8
+///////////////////////////////////////////////
+public static Decimal abs(Decimal num) {
+    return num.abs();
+}
+
+public static Integer abs(Integer num) {
+    return Math.abs(num);
+}
+//////////////////////////////////////Input///////////////////
+Integer result = SimpleCalculatorr.abs(-5); // result = 5
+/////////////////////////////////////////////
+public static Integer max(Integer num1, Integer num2) {
+    return Math.max(num1, num2);
+}
+
+public static Integer min(Integer num1, Integer num2) {
+    return Math.min(num1, num2);
+}
+////////////////////Input///////////
+Integer result = SimpleCalculatorr.max(10, 20); // result = 20
+////////////////////
